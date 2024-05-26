@@ -21,15 +21,30 @@ class MainWindow(QMainWindow):
     
         
     def display_selected_image(self, row, column):
-        # Récupérer l'objet QLabel à partir de la cellule sélectionnée
-        cell_widget = self.ui.tableWidget_Image.cellWidget(row, column)
-        if isinstance(cell_widget, QLabel):
-            # Récupérer la pixmap de l'objet QLabel
-            pixmap = cell_widget.pixmap()
-            
+        if column == 1:  # Vérifier si la colonne cliquée est celle des images
+            cell_widget = self.ui.tableWidget_Image.cellWidget(row, column)
+            if isinstance(cell_widget, QLabel):
+                pixmap = cell_widget.pixmap()
 
-            # Afficher la pixmap dans le widget QLabel label
-            self.ui.label.setPixmap(pixmap)
+                # Récupérer les dimensions de l'image
+                largeur = pixmap.width()
+                hauteur = pixmap.height()
+
+                # Calculer la taille maximale pour l'affichage dans le widget label
+                max_largeur = self.ui.label.width()
+                max_hauteur = self.ui.label.height()
+
+                # Redimensionner la pixmap si nécessaire
+                if largeur > max_largeur or hauteur > max_hauteur:
+                    pixmap_scaled = pixmap.scaled(max_largeur, max_hauteur, QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)
+                    self.ui.label.setPixmap(pixmap_scaled)
+                else:
+                    self.ui.label.setPixmap(pixmap)
+
+                # Centrer l'image dans le label
+                self.ui.label.setAlignment(QtCore.Qt.AlignCenter)
+
+
 
     def display_images_from_database(self):
         print("Bonjour click")  # Print a message to console indicating the button click event
@@ -39,8 +54,8 @@ class MainWindow(QMainWindow):
             mydb = mysql.connector.connect(
                 host="localhost",
                 user="root",
-                password="",
-                database="editimages"
+                password="Min36tity!",
+                database="images_traitement"
             )
 
             # Retrieve data from the database
@@ -63,7 +78,7 @@ class MainWindow(QMainWindow):
                 
                 label.setPixmap(pixmap)  # Adjust the size of the image if necessary
                 label.setAlignment(QtCore.Qt.AlignCenter)
-                  # Add border to the label
+                # Add border to the label
 
 
                 self.ui.tableWidget_Image.setRowCount(row_position + 1)
